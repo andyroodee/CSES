@@ -125,24 +125,22 @@ func runTest(command string, testDir string, testFile string, outputDir string, 
 }
 
 func main() {
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: runner command testDir [outputDir]")
-		fmt.Println("If the command contains spaces, wrap it in single quotes.")
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: runner command")
 		os.Exit(1)
 	}
 
 	const timeout = 2 * time.Second
 
-	command := os.Args[1]
-	testDir := os.Args[2]
-	var outputDir string
-	if len(os.Args) > 3 {
-		outputDir = os.Args[3]
-		err := os.MkdirAll(outputDir, 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
+	const relativeRoot = "../../ProblemSet/"
+	command := path.Join(relativeRoot, os.Args[1])
+	testDir := path.Join(path.Dir(path.Dir(command)), "tests")
+	outputDir := path.Join(path.Dir(command), "output")
+	err := os.MkdirAll(outputDir, 0755)
+	if err != nil {
+		log.Fatal(err)
 	}
+
 	entries, err := os.ReadDir(testDir)
 	if err != nil {
 		log.Fatal(err)
